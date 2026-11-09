@@ -1,5 +1,6 @@
 import InteractiveCtaSection from '../components/InteractiveCtaSection'
-import CompanyHero from '../components/CompanyHero'
+import { Link } from 'react-router-dom'
+import SplitHero from '../components/SplitHero'
 import MissionVisionSection from '../components/MissionVisionSection'
 import ValuesSection from '../components/ValuesSection'
 import CompanyFindUs from '../components/CompanyFindUs'
@@ -9,7 +10,27 @@ export default function Company() {
   usePageTitle('About')
   return (
     <>
-      <CompanyHero imageSrc="https://images.pexels.com/photos/7250797/pexels-photo-7250797.jpeg" />
+      <SplitHero
+        eyebrow="About"
+        title="The link between medical technology and the people who rely on it"
+        imageSrc="https://images.pexels.com/photos/7250797/pexels-photo-7250797.jpeg?auto=compress&cs=tinysrgb&w=2560"
+        imageAlt="Rise Global healthcare and medical facility"
+        description={
+          <>
+            <p className="split-hero-lede">
+              Rise Global GmbH advances healthcare by delivering high-quality medical solutions to
+              clients around the world, primarily in Africa and Asia.
+            </p>
+            <p className="split-hero-sub">
+              Our products and services cover pharmaceuticals, medical devices, cosmetics, food
+              supplements, API and pharma machineries, and services.{' '}
+              <Link to="/products" className="split-hero-link">
+                See products and services &rarr;
+              </Link>
+            </p>
+          </>
+        }
+      />
 
       <ValuesSection />
 

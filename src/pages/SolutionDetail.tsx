@@ -22,9 +22,11 @@ export default function SolutionDetail() {
     <>
       <SolutionHero solution={solution} />
 
-      <section className="section">
-        <div className="container">
-          <h2 className="h-section">{solution.breakdown.title}</h2>
+      <section className="section bd-section">
+        <div className="bd-glow bd-glow--a" aria-hidden="true" />
+        <div className="bd-glow bd-glow--b" aria-hidden="true" />
+        <div className="container bd-inner">
+          <h2 className="h-section bd-heading">{solution.breakdown.title}</h2>
           <Breakdown data={solution.breakdown} />
         </div>
       </section>

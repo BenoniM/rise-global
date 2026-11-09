@@ -57,14 +57,20 @@ export const assurance = [
 export const esg = [
   {
     title: 'Environment',
+    headline: 'Reducing our footprint across the supply chain',
+    image: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1200&q=80',
     text: 'We work to reduce our environmental impact. That means sourcing from eco-certified or low-impact suppliers, partnering with eco-friendly manufacturers, treating and disposing of pharmaceutical waste properly, optimizing delivery routes to cut our carbon footprint, and complying with environmental regulations.',
   },
   {
     title: 'Social',
+    headline: 'Fair, equitable access to healthcare',
+    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80',
     text: 'We aim to have a positive effect on people across our supply chain: employees, customers and communities. We support ethical and equitable access to healthcare through affordable medical products, ethical labor practice, responsible marketing, transparent pricing, capacity building in local health systems, community engagement, and strict anti-bribery and anti-corruption standards.',
   },
   {
     title: 'Governance',
+    headline: 'Transparent structures, responsible decisions',
+    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80',
     text: 'We run transparent, ethical management structures that support responsible decisions, legal compliance, risk mitigation and long-term business integrity. This rests on ethical practice, regulatory compliance, corporate governance, risk management and data security, stakeholder engagement, and transparent reporting.',
   },
 ]

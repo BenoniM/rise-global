@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import PageHero from '../components/PageHero'
+import SplitHero from '../components/SplitHero'
 import { company, productGroups } from '../data/site'
 import { usePageTitle } from '../lib/usePageTitle'
 
@@ -7,22 +7,23 @@ export default function Products() {
   usePageTitle('Products and services')
   return (
     <>
-      <PageHero
-        title="PRODUCTS"
+      <SplitHero
+        eyebrow="Products"
+        title="High-quality products for every part of healthcare"
         imageSrc="https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=2560&q=80"
         imageAlt="Rise Global medical and pharmaceutical products"
         description={
           <>
-            <p className="who-desc-lede">
+            <p className="split-hero-lede">
               A comprehensive selection of high-quality pharmaceuticals, medical devices,
               cosmetics, food supplements, API and pharma machinery.
             </p>
-            <p className="who-desc-sub">
+            <p className="split-hero-sub">
               <a
                 href={company.catalogUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="who-link"
+                className="split-hero-link"
               >
                 Download the catalog (PDF) &rarr;
               </a>

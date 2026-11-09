@@ -1,40 +1,38 @@
 import type { Breakdown as BreakdownData } from '../data/solutions'
 
-/** Structured breakdown of scope / equipment: a table when rows are labelled, a plain list otherwise. */
+/**
+ * Scope / equipment breakdown rendered as a grid of frosted-glass cards.
+ * Labelled rows: label is the card title, items are listed beneath it.
+ * Flat rows (no label): the single item becomes the card title.
+ */
 export default function Breakdown({ data }: { data: BreakdownData }) {
-  if (!data.headings) {
-    return (
-      <ul className="scope-list">
-        {data.rows.flatMap((r) => r.items).map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
-    )
-  }
+  const total = String(data.rows.length).padStart(2, '0')
 
   return (
-    <table className="spec">
-      <caption className="sr-only">{data.title}</caption>
-      <thead>
-        <tr>
-          <th scope="col">{data.headings[0]}</th>
-          <th scope="col">{data.headings[1]}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.rows.map((row) => (
-          <tr key={row.label}>
-            <th scope="row">{row.label}</th>
-            <td>
-              <ul className={row.items.length > 5 ? 'spec-items spec-items--cols' : 'spec-items'}>
-                {row.items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <ul className="bd-grid" aria-label={data.title}>
+      {data.rows.map((row, i) => {
+        const title = row.label ?? row.items[0]
+        const items = row.label ? row.items : row.items.slice(1)
+        return (
+          <li key={title} className="bd-card">
+            <div className="bd-card-num" aria-hidden="true">
+              <span className="bd-card-num-main">{String(i + 1).padStart(2, '0')}</span>
+              <span className="bd-card-num-sup">/{total}</span>
+            </div>
+
+            <div className="bd-card-body">
+              <h3 className="bd-card-title">{title}</h3>
+              {items.length > 0 && (
+                <ul className="bd-card-items">
+                  {items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </li>
+        )
+      })}
+    </ul>
   )
 }

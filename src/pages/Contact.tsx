@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import PageHero from '../components/PageHero'
+import SplitHero from '../components/SplitHero'
 import { company, countries } from '../data/site'
 import { findSolution, solutions } from '../data/solutions'
 import { submitRfq } from '../lib/rfq'
@@ -41,14 +41,15 @@ export default function Contact() {
 
   return (
     <>
-      <PageHero
-        title="REQUEST A QUOTE"
+      <SplitHero
+        eyebrow="Contact"
+        title="Tell us what you are planning"
         imageSrc="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=2560&q=80"
         imageAlt="Rise Global consultation and quote request"
         description={
-          <p className="who-desc-lede">
-            Tell us what you are planning. Select every solution that applies and our global team
-            will reply with a tailored scope and a quote.
+          <p className="split-hero-lede">
+            Select every solution that applies and our global team will reply with a tailored
+            scope and a quote.
           </p>
         }
       />
