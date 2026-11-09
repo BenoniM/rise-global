@@ -1,8 +1,6 @@
-import { Link } from 'react-router-dom'
-import { Glyph } from '../components/Glyphs'
 import CtaBand from '../components/CtaBand'
 import PageHero from '../components/PageHero'
-import { solutions } from '../data/solutions'
+import PlantMap from '../components/PlantMap'
 import { usePageTitle } from '../lib/usePageTitle'
 
 export default function Solutions() {
@@ -11,8 +9,8 @@ export default function Solutions() {
     <>
       <PageHero
         title="SOLUTIONS"
-        imageSrc="https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?auto=format&fit=crop&w=2560&q=80"
-        imageAlt="Rise Global turnkey engineering and medical facilities"
+        imageSrc="https://images.pexels.com/photos/33514501/pexels-photo-33514501.jpeg?auto=compress&cs=tinysrgb&w=2560"
+        imageAlt="Stainless steel process vessels and hygienic piping in a production facility"
         description={
           <p className="who-desc-lede">
             Rise Global supplies the technology, the equipment and the facility around it. From
@@ -22,24 +20,8 @@ export default function Solutions() {
         }
       />
 
-      <section className="section section--tight">
-        <div className="container">
-          <ul className="solution-list">
-            {solutions.map((s) => (
-              <li key={s.slug} className={`solution-row solution-row--${s.code.toLowerCase()}`}>
-                <Link to={`/solutions/${s.slug}`}>
-                  <span className="solution-thumb">
-                    <Glyph id={s.glyph} />
-                  </span>
-                  <span className="solution-main">
-                    <span className="solution-name">{s.name}</span>
-                    <span className="solution-short">{s.short}</span>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <section className="section-divisions">
+        <PlantMap showMore={false} />
       </section>
 
       <CtaBand

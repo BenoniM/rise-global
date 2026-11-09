@@ -1,140 +1,76 @@
-import { useEffect, useRef } from 'react'
+import { useState } from 'react'
 
-const slides = [
+const items = [
   {
-    index: '01',
     title: 'Integrity',
     desc: 'We act with honesty and transparency in all our dealings.',
-    image: 'https://images.pexels.com/photos/18306998/pexels-photo-18306998.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    alt: 'Integrity',
+    image: 'https://images.pexels.com/photos/18306998/pexels-photo-18306998.jpeg?auto=compress&cs=tinysrgb&w=800',
   },
   {
-    index: '02',
     title: 'Excellence',
     desc: 'We deliver the highest standards in products and service.',
-    image: 'https://images.pexels.com/photos/17891261/pexels-photo-17891261.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    alt: 'Excellence',
+    image: 'https://images.pexels.com/photos/17891261/pexels-photo-17891261.jpeg?auto=compress&cs=tinysrgb&w=800',
   },
   {
-    index: '03',
     title: 'Innovation',
     desc: 'We embrace new ideas and technologies to drive progress.',
-    image: 'https://images.pexels.com/photos/7460046/pexels-photo-7460046.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    alt: 'Innovation',
+    image: 'https://images.pexels.com/photos/7460046/pexels-photo-7460046.jpeg?auto=compress&cs=tinysrgb&w=800',
   },
   {
-    index: '04',
     title: 'Partnership',
     desc: 'We build strong partnerships based on trust and respect.',
-    image: 'https://images.pexels.com/photos/31406894/pexels-photo-31406894.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    alt: 'Partnership',
+    image: 'https://images.pexels.com/photos/31406894/pexels-photo-31406894.jpeg?auto=compress&cs=tinysrgb&w=800',
   },
 ]
 
 export default function ValuesSection() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
-  const rightRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const section = sectionRef.current
-    const track = trackRef.current
-    const right = rightRef.current
-    if (!section || !track || !right) return
-
-    let rafId: number | null = null
-
-    const update = () => {
-      const rect = section.getBoundingClientRect()
-      const totalScroll = section.offsetHeight - window.innerHeight
-      if (totalScroll <= 0) return
-
-      const scrolled = Math.max(-rect.top, 0)
-      const rawProgress = Math.min(scrolled / totalScroll, 1)
-      // Finish horizontal slide translation smoothly at 94% of scroll distance
-      const p = Math.min(rawProgress / 0.94, 1)
-
-      const trackW = track.scrollWidth
-      const rightW = right.offsetWidth
-      const maxTranslate = Math.max(trackW - rightW, 0)
-
-      track.style.transform = `translateX(${-(p * maxTranslate).toFixed(2)}px)`
-    }
-
-    const onScroll = () => {
-      if (rafId !== null) return
-      rafId = requestAnimationFrame(() => {
-        rafId = null
-        update()
-      })
-    }
-
-    const ro = new ResizeObserver(() => {
-      update()
-    })
-    ro.observe(track)
-
-    update()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', update, { passive: true })
-
-    return () => {
-      if (rafId !== null) cancelAnimationFrame(rafId)
-      ro.disconnect()
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', update)
-    }
-  }, [])
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
-    <section id="values" ref={sectionRef} className="vs-section">
-      <div className="vs-sticky">
-
-        {/* Outer left column – anchored label + summary */}
-        <div className="vs-left">
-          <div className="vs-left-top">
-            <p className="vs-eyebrow">Values</p>
-          </div>
-          <div className="vs-left-bottom">
-            <p className="vs-left-desc">
-              We provide reliable solutions, build strong partnerships and create a positive impact.
-            </p>
-          </div>
+    <section id="values" className="vs-section" aria-labelledby="vs-heading">
+      <div className="vs-intro">
+        <div className="vs-intro-top">
+          <p className="vs-eyebrow">Values</p>
+          <span className="vs-marker" aria-hidden="true" />
         </div>
+        <h2 id="vs-heading" className="vs-heading">
+          We provide reliable solutions, build strong partnerships and create a positive impact
+        </h2>
+      </div>
 
-        {/* Right – clipping viewport for the scrolling strip */}
-        <div className="vs-right" ref={rightRef}>
-          <div className="vs-track" ref={trackRef}>
-            {slides.map((s) => (
-              <div key={s.title} className="vs-slide">
+      <div className="vs-list">
+        {items.map((item, i) => {
+          const isOpen = openIndex === i
+          const panelId = `vs-panel-${i}`
+          const buttonId = `vs-trigger-${i}`
 
-                {/* Left strip within slide: number top, text bottom */}
-                <div className="vs-slide-meta">
-                  <span className="vs-slide-num">{s.index}</span>
-                  <div className="vs-slide-text">
-                    <p className="vs-slide-title">{s.title}</p>
-                    <p className="vs-slide-desc">{s.desc}</p>
+          return (
+            <div key={item.title} className={`vs-item${isOpen ? ' is-open' : ''}`}>
+              <h3 className="vs-item-heading">
+                <button
+                  type="button"
+                  id={buttonId}
+                  className="vs-trigger"
+                  aria-expanded={isOpen}
+                  aria-controls={panelId}
+                  onClick={() => setOpenIndex(isOpen ? null : i)}
+                >
+                  <span>{item.title}</span>
+                  <span className="vs-icon" aria-hidden="true" />
+                </button>
+              </h3>
+
+              <div id={panelId} className="vs-panel" role="region" aria-labelledby={buttonId}>
+                <div className="vs-panel-inner">
+                  <div className="vs-panel-content">
+                    <p className="vs-desc">{item.desc}</p>
+                    <img src={item.image} alt="" className="vs-img" loading="lazy" draggable={false} />
                   </div>
                 </div>
-
-                {/* Image – fills the rest of the slide width */}
-                <div className="vs-img-area">
-                  <img
-                    src={s.image}
-                    alt={s.alt}
-                    className="vs-img"
-                    draggable={false}
-                  />
-                </div>
-
               </div>
-            ))}
-
-            {/* Trailing white space spacer so the final image completes its full visage with breathing room */}
-            <div className="vs-slide-spacer" aria-hidden="true" />
-          </div>
-        </div>
-
+            </div>
+          )
+        })}
       </div>
     </section>
   )

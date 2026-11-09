@@ -153,8 +153,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section-solutions-glass" id="solutions">
-        <PlantMap intro />
+      <section className="section-divisions" id="solutions">
+        <PlantMap />
       </section>
 
       <CologneSection />

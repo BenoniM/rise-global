@@ -46,10 +46,9 @@ export default function PageHero({
       const initialRightH = isMobile
         ? Math.min(vh * 0.32, 280)
         : Math.min(Math.max(vh * 0.33, 240), 380)
-      const headerH = isMobile ? 84 : 104
       const targetTop = isMobile ? 58 : 70
 
-      // Dynamic curve cut-off coordinate: measured cleanly to the right of title
+      // Hard step position: measured cleanly to the right of title
       const titleRect = titleWrapRef.current?.getBoundingClientRect()
       let cutX: number
       if (titleRect && titleRect.width > 0) {
@@ -58,26 +57,10 @@ export default function PageHero({
         cutX = Math.min(Math.max(vw * (isMobile ? 0.65 : 0.48), 280), 780)
       }
 
-      // Balanced, noticeably curvier transition
-      const hw = isMobile ? 36 : 56
-      const xStart = Math.max(cutX - hw, 0)
-      const xEnd = Math.min(cutX + hw, vw)
-
-      // Right height: retreats to 0 by p = 0.55
-      const pRight = Math.min(p / 0.55, 1)
-      const rightH = (1 - pRight) * initialRightH
-
-      // Left height: retreats to headerH by p = 0.72, then collapses to 0 between 0.86 and 1.0
-      let leftH: number
-      if (p <= 0.72) {
-        const t = p / 0.72
-        leftH = initialLeftH - t * (initialLeftH - headerH)
-      } else if (p <= 0.86) {
-        leftH = headerH
-      } else {
-        const t = (p - 0.86) / 0.14
-        leftH = headerH * (1 - t)
-      }
+      // Rigid shape: both edges rise by the same amount, so the step never deforms
+      const offset = p * initialLeftH
+      const leftH = initialLeftH - offset
+      const rightH = initialRightH - offset
 
       // Title vertical position: keep fixed where it initially is
       const titleHeight = isMobile ? 36 : 48
@@ -95,24 +78,16 @@ export default function PageHero({
       sticky.style.setProperty('--title-y', `${titleY.toFixed(1)}px`)
       sticky.style.setProperty('--white-title-opacity', whiteTitleOpacity.toFixed(3))
 
-      // Generate 16-point smooth rounded corner transition
-      const numPoints = 16
-      const points: string[] = []
-      points.push('0 0')
-      points.push('100% 0')
-      points.push(`100% ${rightH.toFixed(1)}px`)
-      points.push(`${xEnd.toFixed(1)}px ${rightH.toFixed(1)}px`)
-
-      for (let i = 1; i < numPoints; i++) {
-        const t = i / numPoints
-        const ease = t * t * t * (t * (t * 6 - 15) + 10)
-        const px = xEnd - t * (xEnd - xStart)
-        const py = rightH + ease * (leftH - rightH)
-        points.push(`${px.toFixed(1)}px ${py.toFixed(1)}px`)
-      }
-
-      points.push(`${xStart.toFixed(1)}px ${leftH.toFixed(1)}px`)
-      points.push(`0 ${leftH.toFixed(1)}px`)
+      // Hard-edged step: sharp corners with a slanted riser leaning away from the title
+      const topX = Math.min(cutX + (isMobile ? 28 : 48), vw)
+      const points = [
+        '0 0',
+        '100% 0',
+        `100% ${rightH.toFixed(1)}px`,
+        `${topX.toFixed(1)}px ${rightH.toFixed(1)}px`,
+        `${cutX.toFixed(1)}px ${leftH.toFixed(1)}px`,
+        `0 ${leftH.toFixed(1)}px`,
+      ]
 
       if (curtainRef.current) {
         curtainRef.current.style.clipPath = `polygon(${points.join(', ')})`
@@ -152,7 +127,7 @@ export default function PageHero({
           <h1 className="who-title who-title--white">{title}</h1>
         </div>
 
-        {/* Curved White Curtain with Dark Title (on white curtain) */}
+        {/* Hard-Edged White Curtain with Dark Title (on white curtain) */}
         <div className="who-curtain" ref={curtainRef}>
           <div className="who-title-wrap who-title-wrap--curtain" ref={titleWrapRef}>
             <h1 className="who-title who-title--dark">{title}</h1>

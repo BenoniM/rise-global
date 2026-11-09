@@ -1,4 +1,9 @@
+import { useEffect, useRef } from 'react'
 import { company } from '../data/site'
+
+// How far the image travels each way, as a share of the frame's height.
+// The CSS overscan on .company-findus-image must cover this.
+const PARALLAX_TRAVEL = 0.25
 
 interface CompanyFindUsProps {
   imageSrc?: string
@@ -7,6 +12,48 @@ interface CompanyFindUsProps {
 export default function CompanyFindUs({
   imageSrc = 'https://images.pexels.com/photos/7380397/pexels-photo-7380397.jpeg',
 }: CompanyFindUsProps) {
+  const frameRef = useRef<HTMLDivElement>(null)
+  const imageRef = useRef<HTMLImageElement>(null)
+
+  useEffect(() => {
+    const frame = frameRef.current
+    const image = imageRef.current
+    if (!frame || !image) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    let rafId: number | null = null
+
+    const update = () => {
+      const rect = frame.getBoundingClientRect()
+      const vh = window.innerHeight
+      if (rect.bottom < 0 || rect.top > vh) return
+
+      // 0 as the frame enters at the bottom of the window, 1 as it leaves at the top.
+      const p = (vh - rect.top) / (vh + rect.height)
+      const offset = (p - 0.5) * 2 * PARALLAX_TRAVEL * rect.height
+      image.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0)`
+    }
+
+    const onScrollOrResize = () => {
+      if (rafId !== null) return
+      rafId = requestAnimationFrame(() => {
+        rafId = null
+        update()
+      })
+    }
+
+    update()
+
+    window.addEventListener('scroll', onScrollOrResize, { passive: true })
+    window.addEventListener('resize', onScrollOrResize, { passive: true })
+
+    return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId)
+      window.removeEventListener('scroll', onScrollOrResize)
+      window.removeEventListener('resize', onScrollOrResize)
+    }
+  }, [])
+
   return (
     <section id="locations" className="company-findus-section" aria-label="Where to find us and contact information">
       <div className="company-findus-container">
@@ -106,8 +153,9 @@ export default function CompanyFindUs({
         </div>
 
         {/* Large Visual Frame below the header */}
-        <div className="company-findus-media-container">
+        <div ref={frameRef} className="company-findus-media-container">
           <img
+            ref={imageRef}
             src={imageSrc}
             alt="Rise Global pharmaceutical production and quality assurance in Cologne"
             className="company-findus-image"

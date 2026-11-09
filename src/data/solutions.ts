@@ -34,7 +34,7 @@ export interface Solution {
   code: string
   slug: string
   name: string
-  /** One line, used on the plant map and the overview list. */
+  /** One-line description. Not currently shown on any page. */
   short: string
   /** One-paragraph summary, used in the sub-page header. */
   summary: string
@@ -480,6 +480,28 @@ export const solutions: Solution[] = [
     },
   },
 ]
+
+// Curated Unsplash/Pexels photography mapped to the 9 solutions
+export const solutionImages: Record<string, string> = {
+  'transfer-of-technology':
+    'https://images.unsplash.com/photo-1582719471384-894fbb16e074?auto=format&fit=crop&w=1400&q=85',
+  'machinery-equipment':
+    'https://images.pexels.com/photos/3849594/pexels-photo-3849594.jpeg?auto=compress&cs=tinysrgb&w=1400',
+  'packaging-lines':
+    'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=1400&q=85',
+  'cleanroom-systems':
+    'https://images.pexels.com/photos/3912953/pexels-photo-3912953.jpeg?auto=compress&cs=tinysrgb&w=1400',
+  'laboratory':
+    'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1400&q=85',
+  'water-systems':
+    'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1400&q=85',
+  'electrical-power':
+    'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=1400&q=85',
+  'cold-rooms':
+    'https://images.pexels.com/photos/4483610/pexels-photo-4483610.jpeg?auto=compress&cs=tinysrgb&w=1400',
+  'raw-materials':
+    'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=1400&q=85',
+}
 
 export const findSolution = (slug: string | null | undefined) => {
   if (!slug) return undefined

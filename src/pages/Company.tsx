@@ -6,7 +6,7 @@ import CompanyFindUs from '../components/CompanyFindUs'
 import { usePageTitle } from '../lib/usePageTitle'
 
 export default function Company() {
-  usePageTitle('Company')
+  usePageTitle('About')
   return (
     <>
       <CompanyHero imageSrc="https://images.pexels.com/photos/7250797/pexels-photo-7250797.jpeg" />

@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import riseLogo from '../assets/rise-logo.png'
+import { solutionImages, type GlyphId } from '../data/solutions'
 import Footer from './Footer'
+import { Glyph } from './Glyphs'
 
 function ThreeDotsArrow() {
   return (
@@ -18,22 +20,22 @@ function ThreeDotsArrow() {
 interface NavItem {
   label: string
   to: string
-  children?: { label: string; to: string }[]
+  children?: { label: string; to: string; image: string; glyph?: GlyphId }[]
 }
 
 const middleNavItems: NavItem[] = [
-  { label: 'Company', to: '/company' },
+  { label: 'About', to: '/company' },
   {
     label: 'Solutions',
     to: '/solutions',
     children: [
-      { label: 'Technology Transfer', to: '/solutions/transfer-of-technology' },
-      { label: 'Pharma Production Machinery', to: '/solutions/pharma-production-machinery' },
-      { label: 'Packaging Machinery', to: '/solutions/packaging-machinery' },
-      { label: 'Cleanroom & HVAC', to: '/solutions/cleanroom-technology-hvac' },
-      { label: 'Purified Water & WFI', to: '/solutions/purified-water-systems-wfi' },
-      { label: 'Laboratory & Testing', to: '/solutions/laboratory-testing-equipment' },
-      { label: 'All 10 Solutions', to: '/solutions' },
+      { label: 'Technology Transfer', to: '/solutions/transfer-of-technology', glyph: 'transfer', image: solutionImages['transfer-of-technology'] },
+      { label: 'Pharma Production Machinery', to: '/solutions/pharma-production-machinery', glyph: 'machinery', image: solutionImages['machinery-equipment'] },
+      { label: 'Packaging Machinery', to: '/solutions/packaging-machinery', glyph: 'packaging', image: solutionImages['packaging-lines'] },
+      { label: 'Cleanroom & HVAC', to: '/solutions/cleanroom-technology-hvac', glyph: 'cleanroom', image: solutionImages['cleanroom-systems'] },
+      { label: 'Purified Water & WFI', to: '/solutions/purified-water-systems-wfi', glyph: 'water', image: solutionImages['water-systems'] },
+      { label: 'Laboratory & Testing', to: '/solutions/laboratory-testing-equipment', glyph: 'laboratory', image: solutionImages['laboratory'] },
+      { label: 'All 10 Solutions', to: '/solutions', image: solutionImages['electrical-power'] },
     ],
   },
   { label: 'Products', to: '/products' },
@@ -72,6 +74,7 @@ function Header() {
   const [open, setOpen] = useState(false)
   const [expandedItem, setExpandedItem] = useState<string | null>(null)
   const [hidden, setHidden] = useState(false)
+  const [dropdownDismissed, setDropdownDismissed] = useState(false)
   const { pathname } = useLocation()
   const lastScrollY = useRef(0)
 
@@ -151,8 +154,14 @@ function Header() {
             return (
               <li
                 key={item.to}
-                className={`nav-group nav-piece${hasDropdown ? ' has-dropdown' : ''}`}
+                className={`nav-group nav-piece${hasDropdown ? ' has-dropdown' : ''}${hasDropdown && dropdownDismissed ? ' nav-group--dismissed' : ''}`}
                 style={{ '--piece-index': idx + 1 } as React.CSSProperties}
+                onClick={hasDropdown ? () => {
+                  // The panel covers the page, so close it once a link is followed
+                  setDropdownDismissed(true);
+                  (document.activeElement as HTMLElement | null)?.blur()
+                } : undefined}
+                onMouseLeave={hasDropdown ? () => setDropdownDismissed(false) : undefined}
               >
                 <NavLink
                   to={item.to}
@@ -165,8 +174,12 @@ function Header() {
                   <div className="nav-dropdown">
                     <div className="nav-dropdown-stack">
                       {item.children.map((sub) => (
-                        <Link key={sub.to} to={sub.to} className="nav-dropdown-pill">
-                          {sub.label}
+                        <Link key={sub.to} to={sub.to} className="nav-dropdown-card">
+                          <img src={sub.image} alt="" className="nav-card-photo" loading="lazy" />
+                          <span className="nav-card-icon">
+                            {sub.glyph ? <Glyph id={sub.glyph} /> : <NineDotsBurger open={false} />}
+                          </span>
+                          <span className="nav-card-label">{sub.label}</span>
                         </Link>
                       ))}
                     </div>

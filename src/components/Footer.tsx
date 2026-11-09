@@ -119,7 +119,7 @@ export default function Footer() {
                 {/* Company */}
                 <div className="footer-menu-item">
                   <Link to="/company" className="footer-menu-row">
-                    <span className="footer-menu-label">Company</span>
+                    <span className="footer-menu-label">About</span>
                   </Link>
                 </div>
               </nav>

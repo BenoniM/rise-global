@@ -17,7 +17,7 @@ export const company = {
 }
 
 export const nav = [
-  { label: 'Company', to: '/company' },
+  { label: 'About', to: '/company' },
   { label: 'Solutions', to: '/solutions' },
   { label: 'Products', to: '/products' },
   { label: 'Sustainability', to: '/sustainability' },
