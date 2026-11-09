@@ -3,8 +3,12 @@ import SplitHero from '../components/SplitHero'
 import { company, productGroups } from '../data/site'
 import { usePageTitle } from '../lib/usePageTitle'
 
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+
 export default function Products() {
   usePageTitle('Products and services')
+  const total = String(productGroups.length).padStart(2, '0')
+
   return (
     <>
       <SplitHero
@@ -32,37 +36,52 @@ export default function Products() {
         }
       />
 
-      <section className="section section--tight">
-        <div className="container">
-          <table className="spec spec--plain">
-            <caption className="sr-only">Product groups</caption>
-            <thead className="sr-only">
-              <tr>
-                <th scope="col">Group</th>
-                <th scope="col">Examples</th>
-              </tr>
-            </thead>
-            <tbody>
-              {productGroups.map((g) => (
-                <tr key={g.name} id={g.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}>
-                  <th scope="row">{g.name}</th>
-                  <td>
-                    <ul className="spec-items">
-                      {g.items.map((i) => (
-                        <li key={i}>{i}</li>
-                      ))}
-                    </ul>
-                    {g.more && (
-                      <p className="spec-more">
-                        <Link to={g.more.to}>{g.more.label}</Link>
-                      </p>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <section className="pc-section" aria-labelledby="pc-heading">
+        <div className="pc-intro">
+          <div className="pc-intro-top">
+            <p className="pc-eyebrow">Portfolio</p>
+            <span className="pc-marker" aria-hidden="true" />
+          </div>
+          <div className="pc-intro-body">
+            <h2 id="pc-heading" className="pc-heading">
+              Six product groups, one certified supply chain
+            </h2>
+            <p className="pc-lede">
+              Every product is sourced from certified manufacturers and delivered under Good
+              Distribution Practice.
+            </p>
+          </div>
         </div>
+
+        <ul className="pc-grid">
+          {productGroups.map((g, i) => (
+            <li key={g.name} id={slug(g.name)} className="pc-card">
+              <div className="pc-card-top">
+                <span className="pc-card-count">
+                  {g.items.length} {g.items.length === 1 ? 'item' : 'items'}
+                </span>
+                <span className="pc-card-num" aria-hidden="true">
+                  <span className="pc-card-num-main">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="pc-card-num-sup">/{total}</span>
+                </span>
+              </div>
+
+              <h3 className="pc-card-title">{g.name}</h3>
+
+              <ul className="pc-card-items">
+                {g.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+
+              {g.more && (
+                <Link to={g.more.to} className="pc-card-more">
+                  {g.more.label} <span aria-hidden="true">&rarr;</span>
+                </Link>
+              )}
+            </li>
+          ))}
+        </ul>
       </section>
     </>
   )

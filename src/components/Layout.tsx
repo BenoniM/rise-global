@@ -173,8 +173,13 @@ function Header() {
                 {hasDropdown && item.children && (
                   <div className="nav-dropdown">
                     <div className="nav-dropdown-stack">
-                      {item.children.map((sub) => (
-                        <Link key={sub.to} to={sub.to} className="nav-dropdown-card">
+                      {item.children.map((sub, cardIdx) => (
+                        <Link
+                          key={sub.to}
+                          to={sub.to}
+                          className="nav-dropdown-card"
+                          style={{ '--card-index': cardIdx } as React.CSSProperties}
+                        >
                           <img src={sub.image} alt="" className="nav-card-photo" loading="lazy" />
                           <span className="nav-card-icon">
                             {sub.glyph ? <Glyph id={sub.glyph} /> : <NineDotsBurger open={false} />}
@@ -190,9 +195,16 @@ function Header() {
           })}
         </ul>
 
+        {/* Empty white box filling the gap so the pieces join into one bar */}
+        <div
+          className="nav-piece nav-piece--fill"
+          aria-hidden="true"
+          style={{ '--piece-index': middleNavItems.length + 1 } as React.CSSProperties}
+        />
+
         <div
           className="nav-piece nav-piece--cta"
-          style={{ '--piece-index': middleNavItems.length + 1 } as React.CSSProperties}
+          style={{ '--piece-index': middleNavItems.length + 2 } as React.CSSProperties}
         >
           <Link to="/contact" className="nav-cta-pill">Request a quote</Link>
         </div>

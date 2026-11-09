@@ -83,12 +83,19 @@ export default function Footer() {
                 </div>
 
                 {/* Sub-solutions list placed directly below Solutions as full-width rows */}
-                {solutionsOpen && (
+                <div
+                  className={`footer-sublinks${solutionsOpen ? ' footer-sublinks--open' : ''}`}
+                  inert={!solutionsOpen}
+                >
                   <div className="footer-sublinks-stack">
                     {footerSolutions.map((sub, idx) => {
                       const isAll = idx === footerSolutions.length - 1
                       return (
-                        <div key={sub.to} className="footer-sublink-item">
+                        <div
+                          key={sub.to}
+                          className="footer-sublink-item"
+                          style={{ '--i': idx, '--n': footerSolutions.length } as React.CSSProperties}
+                        >
                           <Link
                             to={sub.to}
                             className={`footer-sublink-row${isAll ? ' footer-sublink-all' : ''}`}
@@ -100,7 +107,7 @@ export default function Footer() {
                       )
                     })}
                   </div>
-                )}
+                </div>
 
                 {/* Products */}
                 <div className="footer-menu-item">
