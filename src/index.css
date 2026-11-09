@@ -465,8 +465,14 @@ svg {
 }
 .nav-dropdown-card:nth-child(n + 6) {
   grid-column: span 5;
-  /* Second row starts above the first, so it drops the full height */
-  transform: translateY(-200%);
+  /* Second row slides out from under the first row: it starts one row up,
+     clipped so only the part below the first row's bottom edge shows */
+  transform: translateY(-100%);
+  clip-path: inset(100% 0 0 0);
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+              clip-path 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.25s ease;
+  transition-delay: calc((6 - var(--card-index, 0)) * 40ms), calc((6 - var(--card-index, 0)) * 40ms), 0s;
 }
 .nav-dropdown-card:nth-child(5),
 .nav-dropdown-card:last-child {
@@ -478,6 +484,16 @@ svg {
   transition: transform 0.5s cubic-bezier(0.2, 1, 0.35, 1),
               color 0.25s ease;
   transition-delay: calc(var(--card-index, 0) * 70ms), 0s;
+}
+/* Second row waits for the first row to land, then drops out of it */
+.nav-group:hover .nav-dropdown-card:nth-child(n + 6),
+.nav-group:has(:focus-visible) .nav-dropdown-card:nth-child(n + 6) {
+  clip-path: inset(0 0 0 0);
+  transition: transform 0.5s cubic-bezier(0.2, 1, 0.35, 1),
+              clip-path 0.5s cubic-bezier(0.2, 1, 0.35, 1),
+              color 0.25s ease;
+  transition-delay: calc((var(--card-index, 0) - 5) * 70ms + 450ms),
+                    calc((var(--card-index, 0) - 5) * 70ms + 450ms), 0s;
 }
 
 /* Photo fills the whole card on hover, under a navy wash that keeps the text readable */
@@ -2825,18 +2841,26 @@ main .ct-side-value a:hover {
   max-height: 410px;
   border-radius: 0;
   overflow: hidden;
+  /* Notch clip lives on the frame so the photo can slide inside it */
+  clip-path: url(#notchedImageClip);
+  -webkit-clip-path: url(#notchedImageClip);
   border: none !important;
   box-shadow: none !important;
   flex-shrink: 0;
 }
 
+/* 124% tall so the scroll parallax can travel 12% of the frame each way
+   (see PARALLAX_TRAVEL in QualityScrollSection) */
 .quality-box-img {
+  position: absolute;
+  top: -12%;
+  left: 0;
   width: 100%;
-  height: 100%;
+  height: 124%;
   object-fit: cover;
   display: block;
-  clip-path: url(#notchedImageClip);
-  -webkit-clip-path: url(#notchedImageClip);
+  transform: translate3d(0, var(--quality-parallax, 0px), 0);
+  will-change: transform;
   border-radius: 0;
   border: none !important;
   box-shadow: none !important;

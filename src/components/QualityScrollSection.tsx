@@ -32,6 +32,10 @@ export const qualityItems: QualityItem[] = [
   },
 ]
 
+// How far the photos travel each way, as a share of their frame's height.
+// The CSS overscan on .quality-box-img must cover this.
+const PARALLAX_TRAVEL = 0.12
+
 type FlipAction = {
   direction: 'next' | 'prev'
   prevIndex: number
@@ -43,6 +47,48 @@ export default function QualityScrollSection() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [flipAction, setFlipAction] = useState<FlipAction>(null)
   const timerRef = useRef<number | null>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+
+  // Scroll parallax: one offset shared by every card's photo, set as a CSS variable
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    let rafId: number | null = null
+
+    const update = () => {
+      const media = section.querySelector<HTMLElement>('.quality-card--active .quality-box-media')
+      if (!media) return
+      const rect = media.getBoundingClientRect()
+      const vh = window.innerHeight
+      if (rect.bottom < 0 || rect.top > vh) return
+
+      // 0 as the frame enters at the bottom of the window, 1 as it leaves at the top.
+      const p = (vh - rect.top) / (vh + rect.height)
+      const offset = (p - 0.5) * 2 * PARALLAX_TRAVEL * rect.height
+      section.style.setProperty('--quality-parallax', `${offset.toFixed(1)}px`)
+    }
+
+    const onScrollOrResize = () => {
+      if (rafId !== null) return
+      rafId = requestAnimationFrame(() => {
+        rafId = null
+        update()
+      })
+    }
+
+    update()
+
+    window.addEventListener('scroll', onScrollOrResize, { passive: true })
+    window.addEventListener('resize', onScrollOrResize, { passive: true })
+
+    return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId)
+      window.removeEventListener('scroll', onScrollOrResize)
+      window.removeEventListener('resize', onScrollOrResize)
+    }
+  }, [])
 
   const handleNext = () => {
     if (timerRef.current) clearTimeout(timerRef.current)
@@ -106,12 +152,12 @@ export default function QualityScrollSection() {
   }
 
   return (
-    <section className="quality-clean-section" aria-label="Quality, compliance and ethics">
+    <section ref={sectionRef} className="quality-clean-section" aria-label="Quality, compliance and ethics">
       {/* SVG Clip Path for the notched image shape */}
       <svg width="0" height="0" style={{ position: 'absolute', pointerEvents: 'none' }} aria-hidden="true">
         <defs>
           <clipPath id="notchedImageClip" clipPathUnits="objectBoundingBox">
-            <path d="M 0,0.04 A 0.04,0.04 0 0,1 0.04,0 L 0.96,0 A 0.04,0.04 0 0,1 1,0.04 L 1,0.72 A 0.035,0.035 0 0,1 0.965,0.755 L 0.835,0.755 A 0.035,0.035 0 0,0 0.80,0.79 L 0.80,0.96 A 0.04,0.04 0 0,1 0.76,1 L 0.04,1 A 0.04,0.04 0 0,1 0,0.96 Z" />
+            <path d="M 0,0 L 1,0 L 1,0.755 L 0.80,0.755 L 0.80,1 L 0,1 Z" />
           </clipPath>
         </defs>
       </svg>
