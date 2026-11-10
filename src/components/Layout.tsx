@@ -212,7 +212,7 @@ function Header() {
 
       {/* ── Mobile: ONE element that physically expands ─────────────────
           Closed  → 172×56 px pill, top-right corner
-          Open    → 100vw × 100dvh, full screen black
+          Open    → 100vw × 100dvh, full screen brand blue
           
           The bar stays visually at 14px from top throughout because:
             top: 14px → 0   (moves up 14px)
@@ -252,6 +252,11 @@ function Header() {
             fades in once mob has expanded */}
         <div className="mob-body" aria-hidden={!open}>
           <div className="mob-items">
+            <div className="mob-group">
+              <NavLink to="/" end className="mob-pill" onClick={() => setOpen(false)}>
+                <span>Home</span>
+              </NavLink>
+            </div>
             {middleNavItems.map((item) => {
               const hasDropdown = Boolean(item.children?.length)
               const isExpanded = hasDropdown && expandedItem === item.to
@@ -276,18 +281,28 @@ function Header() {
                     </NavLink>
                   )}
 
-                  {hasDropdown && isExpanded && item.children && (
-                    <div className="mob-sub">
-                      {item.children.map((sub) => (
-                        <Link
-                          key={sub.to}
-                          to={sub.to}
-                          className="mob-sub-pill"
-                          onClick={() => setOpen(false)}
-                        >
-                          {sub.label}
-                        </Link>
-                      ))}
+                  {hasDropdown && item.children && (
+                    <div
+                      className={`mob-sub${isExpanded ? ' mob-sub--open' : ''}`}
+                      aria-hidden={!isExpanded}
+                    >
+                      <div className="mob-sub-inner">
+                        {item.children.map((sub, subIdx) => (
+                          <Link
+                            key={sub.to}
+                            to={sub.to}
+                            className="mob-sub-pill"
+                            style={{
+                              '--sub-index': subIdx,
+                              '--sub-rev': item.children!.length - 1 - subIdx,
+                            } as React.CSSProperties}
+                            tabIndex={isExpanded ? undefined : -1}
+                            onClick={() => setOpen(false)}
+                          >
+                            {sub.label}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

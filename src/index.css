@@ -625,8 +625,8 @@ svg {
     height: 56px;
     padding-top: 0;
     border-radius: 0;
-    overflow: hidden;           /* clips black bg to pill corners when closed  */
-    background: #000000;        /* always black — bar covers it when collapsed  */
+    overflow: hidden;           /* clips blue bg to pill corners when closed   */
+    background: var(--blue);    /* brand blue — bar covers it when collapsed    */
     z-index: 9999;
     display: flex;
     flex-direction: column;
@@ -778,31 +778,66 @@ svg {
   .mob-pill .nav-arrow        { color: #666; transition: color 0.15s ease; }
   .mob-pill--active .nav-arrow { color: #3E628C; }
 
-  /* Sub-item list */
-  @keyframes mobSubIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  /* Sub-item list — panel grows open (0fr → 1fr), then items cascade in */
   .mob-sub {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.38s cubic-bezier(0.4, 0, 0.2, 1) 0.12s;
+  }
+  .mob-sub--open {
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .mob-sub-inner {
+    min-height: 0;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     gap: 4px;
+    padding: 0;
+    transition: padding 0.38s ease 0.12s;
+  }
+  .mob-sub--open .mob-sub-inner {
     padding: 5px 0 3px;
-    animation: mobSubIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: padding 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .mob-sub-pill {
     display: block;
     padding: 13px 20px;
     border-radius: 0;
-    background: rgba(255, 255, 255, 0.07);
-    color: #cccccc;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.88);
     font-size: 0.95rem;
     font-weight: 500;
     text-decoration: none;
-    transition: background 0.14s ease, color 0.14s ease;
+    opacity: 0;
+    transform: translateX(-14px) scale(0.97);
+    transform-origin: left center;
+    /* Closing: items leave quickly, bottom one first */
+    transition:
+      opacity 0.16s ease calc(var(--sub-rev, 0) * 25ms),
+      transform 0.2s ease calc(var(--sub-rev, 0) * 25ms),
+      background 0.14s ease,
+      color 0.14s ease;
+  }
+  /* Opening: items drop in one by one, top to bottom */
+  .mob-sub--open .mob-sub-pill {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.32s ease calc(80ms + var(--sub-index, 0) * 60ms),
+      transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1) calc(80ms + var(--sub-index, 0) * 60ms),
+      background 0.14s ease,
+      color 0.14s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mob-sub, .mob-sub-inner, .mob-sub-pill,
+    .mob-sub--open, .mob-sub--open .mob-sub-inner, .mob-sub--open .mob-sub-pill {
+      transition: none;
+    }
   }
   .mob-sub-pill:active,
-  .mob-sub-pill:hover { background: #3E628C; color: #ffffff; }
+  .mob-sub-pill:hover { background: #2c4a6e; color: #ffffff; }
 
   /* CTA pinned to bottom */
   .mob-cta {
@@ -3604,14 +3639,18 @@ main .ct-side-value a:hover {
   }
 }
 
-@media (max-width: 768px) {
+/* Mobile (matches the pill-menu breakpoint): one clean column that reads
+   top to bottom: title → drawing → summary + full-width quote button */
+@media (max-width: 860px) {
   .aspen-hero-track {
     height: auto;
+    margin-top: -84px; /* cancels #main's mobile padding-top */
   }
 
   .aspen-hero-sticky {
     position: static;
     height: auto;
+    background: var(--white);
   }
 
   .aspen-grid {
@@ -3619,11 +3658,21 @@ main .ct-side-value a:hover {
     grid-template-rows: auto;
   }
 
+  /* Title: starts below the menu pill, sits at the bottom of a roomy band */
   .aspen-quadrant--top-left {
     border-right: none;
-    border-bottom: 1px solid var(--line);
-    padding: 32px 20px;
-    min-height: 200px;
+    border-bottom: 0;
+    min-height: 44svh;
+    padding: 104px 20px 32px;
+    justify-content: flex-end;
+  }
+
+  .aspen-hero-title {
+    font-size: clamp(2.1rem, 9vw, 3rem);
+    line-height: 1.05;
+    max-width: 100%;
+    hyphens: auto;
+    text-wrap: balance;
   }
 
   .aspen-quadrant--top-right,
@@ -3636,12 +3685,52 @@ main .ct-side-value a:hover {
     position: static;
     width: 100%;
     height: auto;
+    grid-template-columns: 1fr;
     transform: none !important;
     box-shadow: none;
   }
 
-  .aspen-hero-title {
-    font-size: 2.4rem;
+  /* No drawing panel on mobile: title flows straight into the summary */
+  .aspen-card-half--sage {
+    display: none;
+  }
+
+  /* Summary + CTA */
+  .aspen-card-half--dark {
+    height: auto;
+    padding: 32px 20px 28px;
+    gap: 28px;
+  }
+
+  .aspen-card-body {
+    padding: 0;
+  }
+
+  .aspen-card-summary {
+    font-size: 1.02rem;
+    line-height: 1.65;
+  }
+
+  .aspen-card-footer {
+    padding-top: 0;
+  }
+
+  /* Full-width, thumb-sized button */
+  .aspen-conversation-btn {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 54px;
+    padding: 0 18px;
+    background: var(--blue);
+    font-size: 0.85rem;
+  }
+
+  .aspen-conversation-btn:hover,
+  .aspen-conversation-btn:active {
+    gap: 10px;
+    color: var(--white);
+    background: #335377;
   }
 }
 
@@ -4338,6 +4427,11 @@ main .ct-side-value a:hover {
   --split-pad: clamp(20px, 2.6vw, 40px);
   /* How much of the photo shows below the grid on first load */
   --split-peek: clamp(110px, 20vh, 220px);
+  /* Same as #main's top padding: the hero slides up behind the fixed navbar
+     instead of leaving a white strip above it */
+  --split-offset: var(--header-h);
+  margin-top: calc(-1 * var(--split-offset));
+  padding-top: var(--split-offset);
   background: var(--blue);
   color: var(--white);
 }
@@ -4346,9 +4440,9 @@ main .ct-side-value a:hover {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto 1fr;
-  /* Fill the first screen minus the header and the photo peek */
-  min-height: calc(100vh - var(--header-h) - var(--split-peek));
-  min-height: calc(100svh - var(--header-h) - var(--split-peek));
+  /* Compact band: more of the photo shows on first load */
+  min-height: clamp(420px, 70vh, 760px);
+  min-height: clamp(420px, 70svh, 760px);
 }
 
 .split-hero-cell {
@@ -4364,12 +4458,12 @@ main .ct-side-value a:hover {
 }
 
 .split-hero-cell--title {
-  padding-top: clamp(24px, 5vh, 56px);
-  padding-bottom: clamp(28px, 6vh, 64px);
+  padding-top: clamp(24px, 4.5vh, 52px);
+  padding-bottom: clamp(36px, 7vh, 80px);
 }
 
 .split-hero-eyebrow {
-  margin: 0 0 clamp(20px, 5vh, 52px);
+  margin: 0 0 clamp(28px, 6vh, 64px);
   font-size: clamp(0.95rem, 1.15vw, 1.15rem);
   font-weight: 560;
   letter-spacing: 0.02em;
@@ -4388,7 +4482,8 @@ main .ct-side-value a:hover {
 }
 
 .split-hero-cell--desc {
-  padding-bottom: clamp(24px, 5vh, 56px);
+  padding-top: clamp(28px, 5vh, 56px);
+  padding-bottom: clamp(36px, 7vh, 80px);
 }
 
 .split-hero-cell--desc > * {
@@ -4396,7 +4491,7 @@ main .ct-side-value a:hover {
 }
 
 .split-hero-lede {
-  margin: 0 0 0.9em;
+  margin: 0 0 1.3em;
   font-size: clamp(1.1rem, min(1.6vw, 2.8vh), 1.7rem);
   font-weight: 400;
   line-height: 1.3;
@@ -4457,9 +4552,34 @@ main .ct-side-value a:hover {
   }
   .split-hero-grid {
     grid-template-rows: auto;
+    min-height: 0;
   }
   .split-hero-media {
     height: 80vh;
+  }
+}
+
+/* Mobile: the navbar is only a pill in the top-right corner, so the text
+   rises to the very top with the eyebrow sitting level with the pill */
+@media (max-width: 860px) {
+  .split-hero {
+    margin-top: -84px; /* cancels #main's mobile padding-top */
+    padding-top: 0;
+  }
+  .split-hero-grid {
+    min-height: 62svh;
+    align-content: space-between;
+  }
+  .split-hero-cell--title {
+    padding-top: 32px;   /* eyebrow centred on the pill (top 14px, 56px tall) */
+    padding-bottom: 48px;
+  }
+  .split-hero-eyebrow {
+    margin-bottom: 52px; /* clear gap between pill row and headline */
+  }
+  .split-hero-cell--desc {
+    padding-top: 36px;
+    padding-bottom: 48px;
   }
 }
 
